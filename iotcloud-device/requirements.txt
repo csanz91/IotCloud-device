@@ -1,0 +1,4 @@
+paho-mqtt
+falcon
+gunicorn
+-e libs/samsungctl

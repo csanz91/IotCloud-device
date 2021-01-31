@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+  iotcloud-device:
+    build: ./iotcloud-device
+    restart: always
+    ports:
+      - "5010:5010"
+      - "8001:8001"
+      - "37021:37021/udp"
+      - "9000:9/udp"
+    volumes:
+      - ./iotcloud-device/logs:/app/logs
+      - ./iotcloud-device/config:/app/config
+      - device_data:/app/device_data
+    network_mode: "host" 
+volumes:
+  device_data:
