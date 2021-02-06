@@ -1,4 +1,7 @@
-FROM python:3.8
+FROM python:3.9
+
+# Cache lxml at the begining
+RUN pip install lxml
 
 # Create app directory
 WORKDIR /app

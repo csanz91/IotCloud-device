@@ -21,6 +21,16 @@ def decodeStatus(value):
     return status
 
 
+def notIsNaN(num):
+    assert num == num
+
+
+def parseFloat(value):
+    parsedFloat = float(value)
+    notIsNaN(parsedFloat)
+    return parsedFloat
+
+
 def getResponseModel(result, data=None):
     response = {"result": result}
     if data is not None:

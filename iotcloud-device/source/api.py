@@ -5,7 +5,6 @@ import threading
 import falcon
 
 import device_setup_api
-import utils
 import advise_device
 import device
 

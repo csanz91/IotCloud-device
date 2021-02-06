@@ -1,21 +1,16 @@
 import logging
 import samsungctl
 
-import utils
+import device_base
 
 logger = logging.getLogger(__name__)
 
 
-class TV:
+class TV(device_base.Device_Base):
     def __init__(self, sensorId, sensorName, configPath):
-        self.sensorId = f"{utils.getDeviceId()}_{sensorId}"
-        self.sensorName = sensorName
+        super().__init__(sensorId, sensorName)
         self.sensorType = "TV"
-        self.state = False
-        self.version = "v0.3_gw"
         self.sensorMetadata = {"bidirectional": False}
-        self.mqttHeader = ""
-        self.mqttClient = None
 
         config = samsungctl.Config.load(configPath)
         self.remote = samsungctl.Remote(config)
@@ -30,17 +25,7 @@ class TV:
             logger.error(f"Could not send the command: {command}", exc_info=True)
 
     def init(self, mqttHeader, mqttClient):
-        self.mqttHeader = mqttHeader
-        self.mqttClient = mqttClient
+        super().init(mqttHeader, mqttClient)
 
         mqttClient.subscribe(mqttHeader + self.sensorId + "/aux/setToogle")
         mqttClient.subscribe(mqttHeader + "+/setToogle")
-
-    def exportData(self):
-        return {
-            "sensorId": self.sensorId,
-            "sensorName": self.sensorName,
-            "sensorType": self.sensorType,
-            "version": self.version,
-            "sensorMetadata": self.sensorMetadata,
-        }
