@@ -22,7 +22,7 @@ class Led_Strip_RGB(led_strip_base.Led_Strip):
         if self.mqttClient and self.mqttClient.is_connected():
             self.mqttClient.publish(
                 self.mqttHeader + self.sensorId + "/aux/color",
-                "00{:02X}{:02X}{:02X}".format(self.r, self.g, self.b),
+                "ff{:02x}{:02x}{:02x}".format(self.r, self.g, self.b),
                 qos=1,
                 retain=True,
             )
