@@ -10,29 +10,29 @@ class Led_Strip_RGB(led_strip_base.Led_Strip):
         super().__init__(sensorId, sensorName, macAddr)
 
         self.sensorType = "ledRGB"
-        self.selColor = "000F0F0F"
+        self.r = 255
+        self.g = 255
+        self.b = 255
 
     def setBrightness(self, brightness, retry=2):
         self.brightness = brightness
-        self.setColor(self.selColor)
+        self.setColor(self.r, self.g, self.b)
 
     def reportColor(self):
         if self.mqttClient and self.mqttClient.is_connected():
             self.mqttClient.publish(
                 self.mqttHeader + self.sensorId + "/aux/color",
-                self.selColor,
+                "00{:02X}{:02X}{:02X}".format(self.r, self.g, self.b),
                 qos=1,
                 retain=True,
             )
 
-    def setColor(self, newColor, retry=2):
-
-        self.selColor = newColor
+    def setColor(self, r, g, b, retry=2):
+        self.r = r
+        self.g = g
+        self.b = b
 
         if self.ledDevice:
-            r = int(newColor[2:4], 16)
-            g = int(newColor[4:6], 16)
-            b = int(newColor[6:8], 16)
 
             self.ledDevice.setRgbw(r, g, b, brightness=int(self.brightness * 255))
 
@@ -40,7 +40,7 @@ class Led_Strip_RGB(led_strip_base.Led_Strip):
             self.reportBrightness()
         elif retry:
             self.connect()
-            self.setColor(newColor, retry=(retry - 1))
+            self.setColor(r, g, b, retry=(retry - 1))
 
     def setState(self, newState, retry=2):
         self.startIncreasingBrightness = newState

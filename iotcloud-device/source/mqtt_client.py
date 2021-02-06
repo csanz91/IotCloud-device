@@ -58,7 +58,7 @@ class MqttClient:
             try:
                 state = utils.decodeBoolean(msg.payload)
             except:
-                logger.error(f"Invalid state value: {state}")
+                logger.error(f"Invalid state value: {msg.payload}")
                 return
             sensor.setState(state)
         elif endpoint == "aux":
@@ -70,11 +70,16 @@ class MqttClient:
                 try:
                     brightness = utils.parseFloat(msg.payload)
                 except:
-                    logger.error(f"Invalid brightness value: {brightness}")
+                    logger.error(f"Invalid brightness value: {msg.payload}")
                     return
                 sensor.setBrightness(brightness)
             elif action == "setColor":
-                sensor.setColor(msg.payload)
+                try:
+                    r, g, b = utils.decodeColor(msg.payload)
+                except:
+                    logger.error(f"Invalid color value: {msg.payload}")
+                    return
+                sensor.setColor(r, g, b)
             elif action == "command":
                 sensor.sendCommand(msg.payload)
 

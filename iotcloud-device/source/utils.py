@@ -31,6 +31,14 @@ def parseFloat(value):
     return parsedFloat
 
 
+def decodeColor(color):
+    r = int(color[2:4], 16)
+    g = int(color[4:6], 16)
+    b = int(color[6:8], 16)
+
+    return r, g, b
+
+
 def getResponseModel(result, data=None):
     response = {"result": result}
     if data is not None:
