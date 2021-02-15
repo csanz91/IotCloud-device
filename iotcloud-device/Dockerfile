@@ -1,7 +1,8 @@
 FROM python:3.9
 
-# Cache lxml at the begining
+# Cache heavy libs at the begining
 RUN pip install lxml
+RUN pip install pycryptodome
 
 # Create app directory
 WORKDIR /app
