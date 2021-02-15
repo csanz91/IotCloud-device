@@ -36,59 +36,11 @@ class MqttClient:
     def on_disconnect(self, client, userdata, rc):
         logger.info(f"Disconnected result code: {rc}")
 
-    def on_message(self, client, userdata, msg):
-        msg.payload = msg.payload.decode("utf-8")
-        try:
-            topics = msg.topic.split("/")
-            # version = topics[0]
-            # locationId = topics[1]
-            # deviceId = topics[2]
-            sensorId = topics[3]
-            endpoint = topics[4]
-        except:
-            logger.error(f"Unable to decode topic: {msg.topic}", exc_info=True)
-            return
-
-        sensor = self.getSensor(sensorId)
-        if not sensor:
-            logger.error(f"The sensor with id: {sensorId} was not found")
-            return
-
-        if endpoint == "setState":
-            try:
-                state = utils.decodeBoolean(msg.payload)
-            except:
-                logger.error(f"Invalid state value: {msg.payload}")
-                return
-            sensor.setState(state)
-        elif endpoint == "aux":
-            action = topics[5]
-
-            if action == "setToogle":
-                sensor.setToogle()
-            elif action == "setBrightness":
-                try:
-                    brightness = utils.parseFloat(msg.payload)
-                except:
-                    logger.error(f"Invalid brightness value: {msg.payload}")
-                    return
-                sensor.setBrightness(brightness)
-            elif action == "setColor":
-                try:
-                    r, g, b = utils.decodeColor(msg.payload)
-                except:
-                    logger.error(f"Invalid color value: {msg.payload}")
-                    return
-                sensor.setColor(r, g, b)
-            elif action == "command":
-                sensor.sendCommand(msg.payload)
-
     def connect(self):
 
         self.client = mqtt.Client(client_id=self.deviceId + utils.getDeviceId())
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
-        self.client.on_message = self.on_message
         self.client.will_set(self.mqttHeader + "status", "offline", retain=True)
         self.client.username_pw_set(self.token, "_")
         self.client.tls_set(

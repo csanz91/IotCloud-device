@@ -1,5 +1,6 @@
 import logging
 
+import utils
 import led_strip_base
 
 logger = logging.getLogger(__name__)
@@ -64,4 +65,16 @@ class Led_Strip_RGB(led_strip_base.Led_Strip):
         super().init(mqttHeader, mqttClient)
 
         self.reportColor()
-        self.mqttClient.subscribe(self.mqttHeader + self.sensorId + "/aux/setColor")
+
+        topic = self.mqttHeader + self.sensorId + "/aux/setColor"
+        mqttClient.subscribe(topic)
+
+        def on_message(client, obj, msg):
+            try:
+                r, g, b = utils.decodeColor(msg.payload)
+            except:
+                logger.error(f"Invalid color value: {msg.payload}")
+                return
+            self.setColor(r, g, b)
+
+        mqttClient.message_callback_add(topic, on_message)

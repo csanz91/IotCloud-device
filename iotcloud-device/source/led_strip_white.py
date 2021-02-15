@@ -27,15 +27,6 @@ class Led_Strip_Mono(led_strip_base.Led_Strip):
                 )
             time.sleep(self.timerPeriod)
 
-    def reportBrightness(self):
-        if self.mqttClient and self.mqttClient.is_connected():
-            self.mqttClient.publish(
-                self.mqttHeader + self.sensorId + "/aux/brightness",
-                self.brightness,
-                qos=1,
-                retain=True,
-            )
-
     def setBrightness(self, brightness, retry=2):
         self.brightness = brightness
         if self.ledDevice:
@@ -70,8 +61,3 @@ class Led_Strip_Mono(led_strip_base.Led_Strip):
         elif retry:
             self.connect()
             self.setState(newState, retry=(retry - 1))
-
-    def init(self, mqttHeader, mqttClient):
-
-        super().init(mqttHeader, mqttClient)
-

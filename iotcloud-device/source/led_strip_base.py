@@ -1,5 +1,6 @@
 import logging
 
+import utils
 import switch_base
 from flux_led import WifiLedBulb, BulbScanner
 
@@ -39,6 +40,15 @@ class Led_Strip(switch_base.Switch_Base):
                 retain=True,
             )
 
+    def setBrightness(self, brightness):
+        self.brightness = brightness
+
+        newState = brightness > 0.0
+        if newState != self.state:
+            super().setState(newState)
+
+        self.reportBrightness()
+
     def setState(self, newState, retry=2):
 
         if self.ledDevice:
@@ -58,6 +68,17 @@ class Led_Strip(switch_base.Switch_Base):
         super().init(mqttHeader, mqttClient)
 
         self.reportBrightness()
-        self.mqttClient.subscribe(
-            self.mqttHeader + self.sensorId + "/aux/setBrightness"
-        )
+
+        topic = self.mqttHeader + self.sensorId + "/aux/setBrightness"
+        mqttClient.subscribe(topic)
+
+        def on_message(client, obj, msg):
+            try:
+                brightness = utils.parseFloat(msg.payload)
+                assert 0.0 <= brightness <= 1.0
+            except:
+                logger.error(f"Invalid brightness value: {msg.payload}")
+                return
+            self.setBrightness(brightness)
+
+        mqttClient.message_callback_add(topic, on_message)

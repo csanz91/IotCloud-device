@@ -27,5 +27,10 @@ class TV(device_base.Device_Base):
     def init(self, mqttHeader, mqttClient):
         super().init(mqttHeader, mqttClient)
 
-        mqttClient.subscribe(mqttHeader + self.sensorId + "/aux/setToogle")
-        mqttClient.subscribe(mqttHeader + "+/setToogle")
+        topic = self.mqttHeader + self.sensorId + "/aux/setToogle"
+        mqttClient.subscribe(topic)
+
+        def on_message(client, obj, msg):
+            self.setToogle()
+
+        mqttClient.message_callback_add(topic, on_message)
