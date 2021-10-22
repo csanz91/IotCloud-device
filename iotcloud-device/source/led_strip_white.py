@@ -33,7 +33,7 @@ class Led_Strip_Mono(led_strip_base.Led_Strip):
             self.ledDevice.setBrightness(brightness)
             self.ledDevice.refreshState()
 
-        elif retry:
+        elif retry < 1:
             self.connect()
             self.setBrightness(brightness, retry=(retry - 1))
 
@@ -58,6 +58,6 @@ class Led_Strip_Mono(led_strip_base.Led_Strip):
 
             self.reportState()
             self.reportBrightness()
-        elif retry:
+        elif retry < 1:
             self.connect()
             self.setState(newState, retry=(retry - 1))
