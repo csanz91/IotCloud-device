@@ -1,8 +1,6 @@
 import logging
 import logging.config
-import random
 import ssl
-import time
 
 import paho.mqtt.client as mqtt
 
@@ -38,7 +36,9 @@ class MqttClient:
 
     def connect(self):
 
-        self.client = mqtt.Client(client_id=self.deviceId + utils.getDeviceId())
+        self.client = mqtt.Client(
+            client_id=self.deviceId + utils.getDeviceId(), transport="websockets"
+        )
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
         self.client.will_set(self.mqttHeader + "status", "offline", retain=True)
@@ -51,7 +51,7 @@ class MqttClient:
             tls_version=ssl.PROTOCOL_TLSv1_2,
         )
 
-        self.client.connect("mqtt.iotcloud.es", 8883, 30)
+        self.client.connect("mqtt.iotcloud.es", 443, 30)
         self.client.loop_start()
 
     def disconnect(self):
