@@ -1,5 +1,4 @@
 paho-mqtt
 falcon
 gunicorn
--e libs/samsungctl
 -e libs/flux_led
