@@ -2,7 +2,7 @@ version: '3.3'
 services:
   iotcloud-device:
     build: ./iotcloud-device
-    restart: always
+    restart: unless-stopped
     ports:
       - "5010:5010"
       - "8001:8001"
