@@ -12,7 +12,7 @@ class Led_Strip_Mono(led_strip_base.Led_Strip):
         super().__init__(sensorId, sensorName, macAddr)
 
         self.increaseBrightnessDuration = 600.0  # seconds
-        self.timerPeriod = 0.1  # seconds
+        self.timerPeriod = 1.0  # seconds
         self.startIncreasingBrightness = False
 
         self.timer = threading.Thread(target=self.runTimer)
@@ -20,11 +20,22 @@ class Led_Strip_Mono(led_strip_base.Led_Strip):
         self.timer.start()
 
     def runTimer(self):
+        def clamp(n, minn, maxn):
+            return max(min(maxn, n), minn)
+
+        tick = 0
         while True:
             if self.startIncreasingBrightness:
-                self.setBrightness(
-                    self.brightness + self.timerPeriod / self.increaseBrightnessDuration
-                )
+                try:
+                    newBrightness = pow(
+                        tick * self.timerPeriod / self.increaseBrightnessDuration, 2
+                    )
+                    tick += 1
+                    self.setBrightness(clamp(newBrightness, 0.004, 1.0))
+                except:
+                    logger.error("Timer error.", exc_info=True)
+            else:
+                tick = 0
             time.sleep(self.timerPeriod)
 
     def setBrightness(self, brightness, retry=2):
