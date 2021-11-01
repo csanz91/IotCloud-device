@@ -28,7 +28,7 @@ class Led_Strip_Mono(led_strip_base.Led_Strip):
             if self.startIncreasingBrightness:
                 try:
                     newBrightness = pow(
-                        tick * self.timerPeriod / self.increaseBrightnessDuration, 2
+                        tick * self.timerPeriod / self.increaseBrightnessDuration, 4
                     )
                     tick += 1
                     self.setBrightness(clamp(newBrightness, 0.004, 1.0))
