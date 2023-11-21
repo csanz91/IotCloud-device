@@ -2,13 +2,15 @@ import logging
 import threading
 import time
 
+import device_base
 import led_strip_white
 import led_strip_rgb
+import power_sensor
 import utils
 import mqtt_client
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class Device:
@@ -16,7 +18,7 @@ class Device:
         self.deviceInternalId = utils.getDeviceId()
         self.deviceTargetVersion = deviceVersion
         self.deviceVersion = deviceVersion
-        self.sensors = []
+        self.sensors: list[device_base.Device_Base] = []
 
     def addSensor(self, sensor):
         self.sensors.append(sensor)
@@ -27,14 +29,19 @@ class Device:
             "deviceVersion": self.deviceVersion,
             "sensors": [s.exportData() for s in self.sensors],
         }
+    
+    def loop(self):
+        for sensor in self.sensors:
+            sensor.loop()
 
 
 stopEvent = threading.Event()
 restartEvent = threading.Event()
 
 device = Device("v1.0")
-device.addSensor(led_strip_white.Led_Strip_Mono("002_LED", "LED", "C44F33D2B780"))
-device.addSensor(led_strip_rgb.Led_Strip_RGB("003_LED", "RGB", "B4E84223BDBC"))
+device.addSensor(led_strip_white.Led_Strip_Mono("002_LED", "LED", "192.168.0.200"))
+device.addSensor(led_strip_rgb.Led_Strip_RGB("003_LED", "RGB", "192.168.0.201"))
+device.addSensor(power_sensor.Power_Sensor("004_P", "Power", "192.168.0.14"))
 
 
 def runDevice():
@@ -56,14 +63,15 @@ def runDevice():
         mqttClient.connect()
         restartEvent.clear()
 
-        restartEvent.wait()
+        while not stopEvent.isSet() and not restartEvent.isSet():
+            time.sleep(0.1)
+            device.loop()
 
         mqttClient.disconnect()
-
+        
 
 def stopDevice():
     stopEvent.set()
-
 
 def restartDevice():
     restartEvent.set()

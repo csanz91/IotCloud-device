@@ -3,7 +3,7 @@ import threading
 
 import utils
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class Device_Base:
@@ -30,3 +30,6 @@ class Device_Base:
             "version": self.version,
             "sensorMetadata": self.sensorMetadata,
         }
+    
+    def loop(self):
+        pass
