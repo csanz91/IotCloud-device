@@ -4,32 +4,29 @@ import utils
 import switch_base
 from flux_led import WifiLedBulb, BulbScanner
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class Led_Strip(switch_base.Switch_Base):
-    def __init__(self, sensorId, sensorName, macAddr):
+    def __init__(self, sensorId, sensorName, ipAddr):
         super().__init__(sensorId, sensorName)
 
         self.sensorType = "led"
         self.brightness = 0.0
 
-        self.macAddr = macAddr
+        self.ipAddr = ipAddr
         self.ledDevice = None
-
-        # Find the bulb on the LAN
-        self.scanner = BulbScanner()
 
         self.connect()
 
     def connect(self):
-        self.scanner.scan(timeout=4)
-        # Specific ID/MAC of the bulb to set
-        bulb_info = self.scanner.getBulbInfoByID(self.macAddr)
-
-        if bulb_info:
-            self.ledDevice = WifiLedBulb(bulb_info["ipaddr"])
+        try:
+            self.ledDevice = WifiLedBulb(self.ipAddr)
             self.ledDevice.refreshState()
+        except:
+            logger.error(
+                f"It is not possible to connect to the device with ip: {self.ipAddr}"
+            )
 
     def reportBrightness(self):
         if self.mqttClient and self.mqttClient.is_connected():
@@ -50,7 +47,6 @@ class Led_Strip(switch_base.Switch_Base):
         self.reportBrightness()
 
     def setState(self, newState, retry=2):
-
         if self.ledDevice:
             if not newState:
                 self.ledDevice.turnOff()

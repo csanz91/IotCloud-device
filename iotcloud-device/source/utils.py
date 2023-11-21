@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 DATA_PATH = "../device_data/data.p"
 
-DEVICE_INTERNAL_ID = str(uuid.getnode())
+DEVICE_INTERNAL_ID = "202481596676681"
 
 
 def decodeBoolean(value):

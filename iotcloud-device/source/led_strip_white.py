@@ -8,8 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class Led_Strip_Mono(led_strip_base.Led_Strip):
-    def __init__(self, sensorId, sensorName, macAddr):
-        super().__init__(sensorId, sensorName, macAddr)
+    def __init__(self, sensorId, sensorName, ipAddr):
+        super().__init__(sensorId, sensorName, ipAddr)
+
 
         self.increaseBrightnessDuration = 600.0  # seconds
         self.timerPeriod = 1.0  # seconds

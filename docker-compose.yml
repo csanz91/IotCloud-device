@@ -12,6 +12,5 @@ services:
       - ./iotcloud-device/logs:/app/logs
       - ./iotcloud-device/config:/app/config
       - device_data:/app/device_data
-    network_mode: "host" 
 volumes:
   device_data:

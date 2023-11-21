@@ -1,4 +1,5 @@
 paho-mqtt
 falcon
 gunicorn
+requests
 -e libs/flux_led
