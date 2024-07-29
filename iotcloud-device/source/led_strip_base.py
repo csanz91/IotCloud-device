@@ -25,7 +25,7 @@ class Led_Strip(switch_base.Switch_Base):
             self.ledDevice.refreshState()
         except:
             logger.error(
-                f"It is not possible to connect to the device with ip: {self.ipAddr}"
+                f"It is not possible to connect to the device with ip: {self.ipAddr}", exc_info=True
             )
 
     def reportBrightness(self):
