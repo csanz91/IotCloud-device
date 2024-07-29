@@ -1,4 +1,5 @@
 import logging
+import os
 import threading
 import time
 
@@ -60,7 +61,12 @@ def runDevice():
             device.sensors,
         )
 
-        mqttClient.connect()
+        try:
+            mqttClient.connect()
+        except Exception as e:
+            logger.error(f"Failed to connect to MQTT server: {str(e)}")
+            os._exit(1)  # Terminate the thread so it can be restarted
+
         restartEvent.clear()
 
         while not stopEvent.isSet() and not restartEvent.isSet():
