@@ -37,6 +37,7 @@ class MqttClient:
     def connect(self):
 
         self.client = mqtt.Client(
+            mqtt.CallbackAPIVersion.VERSION1,
             client_id=self.deviceId + utils.getDeviceId(), transport="websockets"
         )
         self.client.on_connect = self.on_connect
