@@ -30,7 +30,7 @@ class Device:
             "deviceVersion": self.deviceVersion,
             "sensors": [s.exportData() for s in self.sensors],
         }
-    
+
     def loop(self):
         for sensor in self.sensors:
             sensor.loop()
@@ -42,7 +42,22 @@ restartEvent = threading.Event()
 device = Device("v1.0")
 device.addSensor(led_strip_white.Led_Strip_Mono("002_LED", "LED", "192.168.0.200"))
 device.addSensor(led_strip_rgb.Led_Strip_RGB("003_LED", "RGB", "192.168.0.201"))
-device.addSensor(power_sensor.Power_Sensor("004_P", "Power", "192.168.0.14"))
+device.addSensor(
+    power_sensor.Power_Sensor(
+        sensorId="004_P",
+        sensorName="Power",
+        powerMeterURL="192.168.0.14",
+        measurement="fase4_p_activa",
+    )
+)
+# device.addSensor(
+#     power_sensor.Power_Sensor(
+#         sensorId="005_Kwh",
+#         sensorName="Energy",
+#         powerMeterURL="192.168.0.14",
+#         measurement="fase4_energia_activa",
+#     )
+# )
 
 
 def runDevice():
@@ -74,7 +89,7 @@ def runDevice():
             device.loop()
 
         mqttClient.disconnect()
-        
+
 
 def stopDevice():
     stopEvent.set()

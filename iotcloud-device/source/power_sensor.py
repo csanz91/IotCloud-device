@@ -8,13 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 class Power_Sensor(analog_sensor.Analog_Sensor):
-    def __init__(self, sensorId, sensorName, powerMeterURL):
+    def __init__(self, sensorId, sensorName, powerMeterURL, measurement):
         super().__init__(
             sensorId, sensorName, reportValuePeriod=1.0, decimals=0, enableFilter=False
         )
 
         self.powerMeterURL = powerMeterURL
-        self._sensorId = "fase4_p_activa"
+        self._sensorId = measurement
 
     def getValue(self) -> float | None:
         # Get the xml file from the power meter
