@@ -1,6 +1,5 @@
 import logging
 
-import paho.mqtt.subscribe as subscribe
 import utils
 import device_base
 
@@ -25,6 +24,8 @@ class Switch_Base(device_base.Device_Base):
 
         super().init(mqttHeader, mqttClient)
 
+        self.sensorType = "switch"
+
         mqttClient.publish(
             mqttHeader + self.sensorId + "/aux/switch",
             self.version,
@@ -46,4 +47,15 @@ class Switch_Base(device_base.Device_Base):
 
         mqttClient.message_callback_add(topic, on_message)
 
-        self.reportState()
+        stateTopic = mqttHeader + self.sensorId + "/state"
+        mqttClient.subscribe(stateTopic)
+
+        def on_message_state(client, obj, msg):
+            msg.payload = msg.payload.decode("utf-8")
+            try:
+                state = utils.decodeBoolean(msg.payload)
+                self.state = state
+            except:
+                logger.error(f"Invalid state value: {msg.payload}")
+
+        mqttClient.message_callback_add(stateTopic, on_message_state)
